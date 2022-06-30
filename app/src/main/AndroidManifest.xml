@@ -21,7 +21,7 @@
         android:theme="@style/Theme.Test_mqtt"
         tools:targetApi="31">
         <activity
-            android:name="com.example.security_alert.MainActivity"
+            android:name="com.example.security_alert.ui.main.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,7 +30,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.example.security_alert.UnauthorizedActivity"/>
+        <activity android:name="com.example.security_alert.ui.unauthorized.UnauthorizedActivity"/>
 
         <service android:name="org.eclipse.paho.android.service.MqttService" />
         <service android:name="com.example.security_alert.service.MqttService" />

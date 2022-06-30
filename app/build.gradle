@@ -47,5 +47,10 @@ dependencies {
     //for supporting mqtt
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
+    implementation 'com.squareup.retrofit2:retrofit:2.6.2'
+    implementation 'com.squareup.retrofit2:convertergson:2.6.2'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+
+
 
 }

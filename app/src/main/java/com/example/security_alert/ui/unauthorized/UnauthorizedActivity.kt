@@ -1,4 +1,4 @@
-package com.example.security_alert
+package com.example.security_alert.ui.unauthorized
 
 import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Base64
 import android.widget.ImageView
 import android.widget.TextView
+import com.example.security_alert.R
 
 class UnauthorizedActivity : AppCompatActivity() {
 
