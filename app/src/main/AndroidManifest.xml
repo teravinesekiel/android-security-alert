@@ -11,17 +11,19 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:name=".AlertApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:usesCleartextTraffic="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Test_mqtt"
         tools:targetApi="31">
         <activity
-            android:name="com.example.security_alert.ui.main.MainActivity"
+            android:name="com.example.security_alert.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,8 +31,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name="com.example.security_alert.ui.unauthorized.UnauthorizedActivity"/>
 
         <service android:name="org.eclipse.paho.android.service.MqttService" />
         <service android:name="com.example.security_alert.service.MqttService" />

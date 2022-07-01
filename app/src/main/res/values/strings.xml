@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">test_mqtt</string>
+    <string name="default_error">Something went wrong</string>
+    <string name="time_out">Time Out</string>
+    <string name="network_error">Network error</string>
+    <string name="time_dissapeared">Time Dissapeared:</string>
+    <string name="time_appeared">Time Appeared:</string>
+    <string name="location">Location:</string>
+    <string name="name">Name:</string>
 </resources>

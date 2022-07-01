@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="com.example.security_alert.fragment.unauthorized.UnauthorizedViewModel" />
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/ocbc_color"
+            android:visibility="@{viewModel.loading ? View.VISIBLE : View.GONE}" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/svUnauthorized"
+            android:layout_width="match_parent"
+            tools:context=".fragment.unauthorized.UnauthorizedFragment"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvAlertUser"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="8"
+                    app:unauthorizedItems="@{viewModel.unauthorizedReport}"
+                    tools:listitem="@layout/item_unauthorized_report" />
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+    </RelativeLayout>
+
+
+</layout>

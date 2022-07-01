@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.IBinder
 import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.example.security_alert.utils.MQTTContract
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
@@ -49,6 +50,17 @@ class MqttService : Service() {
         )
         broadcastIntent.putExtra("status","MQTT Connecting")
         LocalBroadcastManager.getInstance(this@MqttService).sendBroadcast(broadcastIntent)
+    }
+
+    private fun initMqttService() {
+        val clientId = MqttClient.generateClientId()
+        client = MqttAndroidClient(this, MQTTContract.MQTT_SERVER_URI, clientId);
+        //set callback
+        val options = MqttConnectOptions()
+        options.userName = MQTTContract.MQTT_SERVER_URI_USER
+        options.password = MQTTContract.MQTT_SERVER_URI_PWD.toCharArray()
+        options.keepAliveInterval = 30
+        options.isCleanSession = true
     }
 
     override fun onDestroy() {
