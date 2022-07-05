@@ -8,6 +8,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
+import com.example.security_alert.service.MqttService
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
     companion object{
@@ -30,7 +32,14 @@ class MainActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(this, permissions,
                 PERMISSION_REQUEST_CODE
             )
+        } else {
+            startMQService()
         }
+    }
+
+    private fun startMQService() {
+        val intent = Intent(this, MqttService::class.java)
+        startService(intent)
     }
 
     private fun hasPermissions(permissions: Array<String>): Boolean {

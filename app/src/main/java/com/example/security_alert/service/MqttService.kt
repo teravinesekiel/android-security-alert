@@ -1,75 +1,55 @@
 package com.example.security_alert.service
 
-import android.app.Service
+import android.app.*
+import android.app.Notification.DEFAULT_VIBRATE
+import android.app.Notification.PRIORITY_HIGH
 import android.content.Intent
+import android.os.Build
 import android.os.IBinder
-import android.util.Log
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.core.app.NotificationCompat
+import com.example.security_alert.MainActivity
+import com.example.security_alert.R
+import com.example.security_alert.utils.BroadcastContract
 import com.example.security_alert.utils.MQTTContract
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
-import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
-import kotlin.text.Charsets.UTF_8
+import timber.log.Timber
+
 
 class MqttService : Service() {
-    companion object {
-        private const val MQTT_HOST = "192.168.1.8"
-        private const val MQTT_PORT = 1883
-        private const val MQTT_USERNAME = "mqtt"
-        private const val MQTT_PASSWORD = "Sm4rtch4rgEr"
-
-        const val INTENT_FILTER = "mqttIntentFilter"
-    }
 
     private lateinit var client: MqttAndroidClient
-    private val broadcastIntent by lazy { Intent(INTENT_FILTER) }
+
+    companion object{
+        const val CHANNEL_ID = "ALERT_CHANNEL_01"
+        const val CHANNEL_NAME = "Security Alert"
+        const val CHANNEL_DESCRIPTION = "New unauthorized person detected"
+    }
 
     override fun onCreate() {
         super.onCreate()
-        initMqtt()
-    }
-
-    @Throws(MqttException::class)
-    private fun initMqtt() {
-        val clientId = MqttClient.generateClientId()
-        client = MqttAndroidClient(
-            this.applicationContext, "tcp://$MQTT_HOST:$MQTT_PORT",
-            clientId, MemoryPersistence()
-        )
-        val options = MqttConnectOptions()
-        options.mqttVersion = MqttConnectOptions.MQTT_VERSION_3_1_1
-        options.userName = MQTT_USERNAME
-        options.password = MQTT_PASSWORD.toCharArray()
-        options.keepAliveInterval = 30
-        options.isCleanSession = true
-        client.setCallback(MQTTCallback())
-        client.connect(
-            options,
-            null,
-            MqttActionListener()
-        )
-        broadcastIntent.putExtra("status","MQTT Connecting")
-        LocalBroadcastManager.getInstance(this@MqttService).sendBroadcast(broadcastIntent)
+        initMqttService()
     }
 
     private fun initMqttService() {
         val clientId = MqttClient.generateClientId()
-        client = MqttAndroidClient(this, MQTTContract.MQTT_SERVER_URI, clientId);
-        //set callback
         val options = MqttConnectOptions()
         options.userName = MQTTContract.MQTT_SERVER_URI_USER
         options.password = MQTTContract.MQTT_SERVER_URI_PWD.toCharArray()
-        options.keepAliveInterval = 30
-        options.isCleanSession = true
-    }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.e(this@MqttService.javaClass.name, "onDestroy: MQTT Service Destroyed")
+        options.isCleanSession = true
+        options.keepAliveInterval = 30
+
+        client = MqttAndroidClient(this, MQTTContract.MQTT_SERVER_URI, clientId);
+        client.setCallback(MQTTCallback())
+        client.connect(options, null, MqttActionListener())
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        return START_NOT_STICKY;
+        if (client != null && client.isConnected) {
+            sendLocalBroadCast("", BroadcastContract.CONNECTED)
+        }
+        return START_STICKY
     }
 
     override fun onBind(p0: Intent?): IBinder? {
@@ -79,35 +59,87 @@ class MqttService : Service() {
     inner class MQTTCallback : MqttCallback {
         override fun connectionLost(cause: Throwable) {
             cause.printStackTrace()
+            Timber.i("Server connection lost")
         }
 
         override fun messageArrived(topic: String, message: MqttMessage) {
-            val messageString = String(message.payload, UTF_8)
+            if (topic == MQTTContract.MQTT_UNAUTHORIZED_CHANNEL) {
+                createNotification()
+            } else if (topic == MQTTContract.MQTT_UNAUTHORIZED_READ_CHANNEL) {
+                sendLocalBroadCast("", BroadcastContract.NEW_UNAUTHORIZED)
+            }
 
-            broadcastIntent.putExtra(topic,messageString)
-            LocalBroadcastManager.getInstance(this@MqttService).sendBroadcast(broadcastIntent)
+            Timber.i("messageArrivedFrom: $topic")
         }
 
         override fun deliveryComplete(token: IMqttDeliveryToken?) {
-            Log.d(this@MqttService.javaClass.name, "deliveryCompleteToken: $token")
+            Timber.i("deliveryComplete: $token")
         }
+    }
+
+    private fun createNotification() {
+        val notificationManager : NotificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+
+        val intent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            var mChannel = notificationManager.getNotificationChannel(CHANNEL_ID)
+            if (mChannel == null) {
+                mChannel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, importance)
+                mChannel.description = CHANNEL_DESCRIPTION
+                mChannel.enableVibration(true)
+                mChannel.vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
+                notificationManager.createNotificationChannel(mChannel)
+            }
+
+            val builder = NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_cctv)
+                .setContentTitle(CHANNEL_NAME)
+                .setContentText(CHANNEL_DESCRIPTION)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .setVibrate(longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400))
+                .setDefaults(Notification.DEFAULT_ALL)
+
+            notificationManager.notify(1002, builder.build())
+        }
+
+        sendLocalBroadCast("", BroadcastContract.NEW_UNAUTHORIZED)
+
+
     }
 
     inner class MqttActionListener : IMqttActionListener {
         override fun onSuccess(asyncActionToken: IMqttToken?) {
-            Log.d(this@MqttService.javaClass.name, "onSuccess: MQTT connect success")
-            client.subscribe(arrayOf("floor","base64","floor/unauthorized","base64/unauthorized"), intArrayOf(0,0,0,0),null,null)
-
-            broadcastIntent.putExtra("status","Connect Mqtt Success")
-            LocalBroadcastManager.getInstance(this@MqttService).sendBroadcast(broadcastIntent)
+            if (client.isConnected) {
+                Timber.i("Server connection success")
+                val topics = arrayOf(
+                    MQTTContract.MQTT_UNAUTHORIZED_CHANNEL,
+                    MQTTContract.MQTT_UNAUTHORIZED_READ_CHANNEL,
+                )
+                val qos = intArrayOf(MQTTContract.MQTT_QOS_2, MQTTContract.MQTT_QOS_2)
+                client.subscribe(topics, qos)
+                sendLocalBroadCast("", BroadcastContract.CONNECTED)
+            }
         }
 
         override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable) {
-            Log.d(this@MqttService.javaClass.name, "onFailure: Failed to connect mqtt")
-            exception.printStackTrace()
-
-            broadcastIntent.putExtra("status","Failed to connect mqtt")
-            LocalBroadcastManager.getInstance(this@MqttService).sendBroadcast(broadcastIntent)
+            Timber.e("Failure Listener: " + exception.localizedMessage)
+            val message =
+                "Connection failure to " + MQTTContract.MQTT_SERVER_URI + " " + exception.localizedMessage
+            sendLocalBroadCast(message, BroadcastContract.ERROR)
         }
+    }
+
+    private fun sendLocalBroadCast(message: String, status: String) {
+        val intent = Intent(BroadcastContract.MQTT_BROADCAST)
+        intent.putExtra("status", status)
+        intent.putExtra("message", message)
+        applicationContext.sendBroadcast(intent)
     }
 }

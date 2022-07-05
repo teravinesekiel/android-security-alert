@@ -17,6 +17,7 @@ import com.alexvas.rtsp.widget.RtspSurfaceView
 import com.example.security_alert.databinding.FragmentUnauthorizedDetailBinding
 import com.example.security_alert.utils.NavUtil
 import dagger.android.support.DaggerFragment
+import timber.log.Timber
 import javax.inject.Inject
 
 class UnauthorizedDetailFragment : DaggerFragment() {
@@ -52,6 +53,7 @@ class UnauthorizedDetailFragment : DaggerFragment() {
 
         override fun onRtspStatusFailed(message: String?) {
             viewDataBinding.pbLoading.visibility = View.GONE
+            Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
         }
 
         override fun onRtspStatusFailedUnauthorized() {
@@ -94,6 +96,7 @@ class UnauthorizedDetailFragment : DaggerFragment() {
                 svVideo.stop()
             } else {
                 val rtspUrl = viewModel.getRtspUrl()
+                Timber.i("rtspUrl: $rtspUrl")
                 var rtspUrlFormatted = rtspUrl.replace("admin:admin@", "")
                 val uri = Uri.parse(rtspUrlFormatted)
                 svVideo.init(uri, viewModel.rtspUsername, viewModel.rtspPassword, "rtsp-client-android")

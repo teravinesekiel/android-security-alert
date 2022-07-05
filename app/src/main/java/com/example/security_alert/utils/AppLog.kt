@@ -15,5 +15,14 @@ class AppLog {
                 ""
             }
         }
+
+        fun i(e: Exception): String {
+            return if (BuildConfig.DEBUG) {
+                Timber.i(e)
+                e.stackTraceToString()
+            } else {
+                ""
+            }
+        }
     }
 }

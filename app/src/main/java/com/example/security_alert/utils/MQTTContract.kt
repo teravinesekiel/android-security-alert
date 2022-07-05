@@ -15,5 +15,9 @@ abstract class MQTTContract {
         const val MQTT_SERVER_URI_PWD = "tcc123";
         const val MQTT_UNAUTHORIZED_CHANNEL = "UnauthorizedChannel"
         const val MQTT_UNAUTHORIZED_READ_CHANNEL = "UnauthorizedReadChannel"
+
+        const val MQTT_QOS_0 = 0
+        const val MQTT_QOS_1 = 1
+        const val MQTT_QOS_2 = 2
     }
 }

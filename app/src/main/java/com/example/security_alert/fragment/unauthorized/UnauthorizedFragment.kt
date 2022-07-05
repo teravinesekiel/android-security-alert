@@ -1,7 +1,10 @@
 package com.example.security_alert.fragment.unauthorized
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,8 +17,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.security_alert.databinding.FragmentUnauthorizedBinding
 import com.example.security_alert.fragment.unauthorized.model.UnauthorizedContent
-import com.example.security_alert.utils.EventObserver
-import com.example.security_alert.utils.NavUtil
+import com.example.security_alert.utils.*
 import dagger.android.support.DaggerFragment
 import timber.log.Timber
 import javax.inject.Inject
@@ -48,6 +50,24 @@ class UnauthorizedFragment : DaggerFragment() {
         setupAdapter()
         setupScrollview()
         observeViewModel()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        registerReceiver()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        requireActivity()
+            .unregisterReceiver(mqttBroadcastReceiver)
+    }
+
+
+    private fun registerReceiver() {
+        val intentFilter = IntentFilter(BroadcastContract.MQTT_BROADCAST)
+        requireActivity()
+            .registerReceiver(mqttBroadcastReceiver, intentFilter)
     }
 
     private fun setupScrollview() {
@@ -110,5 +130,23 @@ class UnauthorizedFragment : DaggerFragment() {
             )
             findNavController().navigate(action)
         })
+    }
+
+    private fun updateMqttStatus(status: String?, message: String?) {
+        if (status == BroadcastContract.ERROR) {
+            message?.let { LocalError(ErrorContract.NETWORK_ERROR, 0, it) }
+                ?.let { viewModel.setError(it) }
+        } else if (status == BroadcastContract.CONNECTED || status == BroadcastContract.NEW_UNAUTHORIZED) {
+            viewModel.requestUnauthorizedReport(true)
+        }
+    }
+
+
+    var mqttBroadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val status = intent.getStringExtra("status")
+            val message = intent.getStringExtra("message")
+            updateMqttStatus(status, message)
+        }
     }
 }

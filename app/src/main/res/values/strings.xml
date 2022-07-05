@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">test_mqtt</string>
+    <string name="app_name">OCBC Security Alert</string>
     <string name="default_error">Something went wrong</string>
     <string name="time_out">Time Out</string>
     <string name="network_error">Network error</string>
-    <string name="time_dissapeared">Time Dissapeared:</string>
-    <string name="time_appeared">Time Appeared:</string>
+    <string name="time_dissapeared">Time disappeared:</string>
+    <string name="time_appeared">Time appeared:</string>
     <string name="location">Location:</string>
     <string name="name">Name:</string>
 </resources>

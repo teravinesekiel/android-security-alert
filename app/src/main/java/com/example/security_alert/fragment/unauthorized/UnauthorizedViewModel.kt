@@ -41,7 +41,7 @@ class UnauthorizedViewModel @Inject constructor(private val repo: UnauthorizedRe
         get() = _detailUnauthorizedEvent
 
     init {
-        fetchUnauthorizedReport(true)
+        _loading.value = true
     }
 
     fun requestUnauthorizedReport(isRefresh: Boolean) {
@@ -50,6 +50,10 @@ class UnauthorizedViewModel @Inject constructor(private val repo: UnauthorizedRe
 
     fun sendReadUnauthorizedReport(content: UnauthorizedContent) {
         sendReadReport(content)
+    }
+
+    fun setError(error: LocalError) {
+        _errorEvent.value = Event(error)
     }
 
     private fun sendReadReport(content: UnauthorizedContent) {
