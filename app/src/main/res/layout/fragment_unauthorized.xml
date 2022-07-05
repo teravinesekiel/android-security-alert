@@ -9,7 +9,7 @@
 
         <variable
             name="viewModel"
-            type="com.example.security_alert.fragment.unauthorized.UnauthorizedViewModel" />
+            type="com.teraglobal.security_alert.fragment.unauthorized.UnauthorizedViewModel" />
 
     </data>
 

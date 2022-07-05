@@ -7,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="com.example.security_alert.fragment.error.ErrorViewModel" />
+            type="com.teraglobal.security_alert.fragment.error.ErrorViewModel" />
     </data>
 
     <RelativeLayout

@@ -6,7 +6,7 @@
     app:startDestination="@id/unauthorizedFragment">
     <fragment
         android:id="@+id/unauthorizedFragment"
-        android:name="com.example.security_alert.fragment.unauthorized.UnauthorizedFragment"
+        android:name="com.teraglobal.security_alert.fragment.unauthorized.UnauthorizedFragment"
         android:label="fragment_unauthorized"
         tools:layout="@layout/fragment_unauthorized" >
         <action
@@ -19,20 +19,20 @@
 
     <fragment
         android:id="@+id/errorFragment"
-        android:name="com.example.security_alert.fragment.error.ErrorFragment"
+        android:name="com.teraglobal.security_alert.fragment.error.ErrorFragment"
         android:label="fragment_error"
         tools:layout="@layout/fragment_error" >
 
         <argument
             android:name="localError"
-            app:argType="com.example.security_alert.utils.LocalError"
+            app:argType="com.teraglobal.security_alert.utils.LocalError"
             app:nullable="false" />
 
     </fragment>
 
     <fragment
         android:id="@+id/unauthorizedDetailFragment"
-        android:name="com.example.security_alert.fragment.unauthorized_detail.UnauthorizedDetailFragment"
+        android:name="com.teraglobal.security_alert.fragment.unauthorized_detail.UnauthorizedDetailFragment"
         android:label="fragment_unauthorized_detail"
         tools:layout="@layout/fragment_unauthorized_detail">
 
@@ -43,7 +43,7 @@
 
         <argument
             android:name="content"
-            app:argType="com.example.security_alert.fragment.unauthorized.model.UnauthorizedContent"
+            app:argType="com.teraglobal.security_alert.fragment.unauthorized.model.UnauthorizedContent"
             app:nullable="false" />
 
     </fragment>

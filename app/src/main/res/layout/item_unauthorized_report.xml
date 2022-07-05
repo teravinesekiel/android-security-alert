@@ -8,11 +8,11 @@
 
         <variable
             name="unauthorized"
-            type="com.example.security_alert.fragment.unauthorized.model.UnauthorizedContent" />
+            type="com.teraglobal.security_alert.fragment.unauthorized.model.UnauthorizedContent" />
 
         <variable
             name="clickListener"
-            type="com.example.security_alert.fragment.unauthorized.UnauthorizedAdapterClickListener" />
+            type="com.teraglobal.security_alert.fragment.unauthorized.UnauthorizedAdapterClickListener" />
 
     </data>
 
