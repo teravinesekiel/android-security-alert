@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">OCBC Security Alert</string>
+    <string name="app_name">Security Alert</string>
     <string name="default_error">Something went wrong</string>
     <string name="time_out">Time Out</string>
     <string name="network_error">Network error</string>
