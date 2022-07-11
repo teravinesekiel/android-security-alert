@@ -37,6 +37,7 @@ class MqttService : Service() {
 
         options.isCleanSession = true
         options.keepAliveInterval = 30
+        options.isAutomaticReconnect = true
 
         client = MqttAndroidClient(this, MQTTContract.MQTT_SERVER_URI, clientId);
         client.setCallback(MQTTCallback())
@@ -44,7 +45,7 @@ class MqttService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (client != null && client.isConnected) {
+        if (client.isConnected) {
             sendLocalBroadCast("", BroadcastContract.CONNECTED)
         }
         return START_STICKY
